@@ -308,7 +308,7 @@ The `BerconMaps` source code is publicly available under **Apache 2.0**:
 https://github.com/Bercon/BerconMaps
 
 The tile geometry algorithm lives in `src/tile.cpp` — pure math, no 3ds Max dependencies,  
-GPU-portable as a CUDA kernel. The fix for the CPU blur bug requires:
+GPU-portable — the algorithm could be implemented as a CUDA kernel by Chaos (no public GPU plugin API exists for third parties). The fix for the CPU blur bug requires:
 
 1. Override `DUVW()` in `BerconSC` to scale derivatives by `tile_size / tile_width`
 2. Override `DPdUVW()` accordingly
