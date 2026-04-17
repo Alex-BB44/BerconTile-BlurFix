@@ -1,12 +1,14 @@
-# BerconTile Blur Fix
+# BerconTile Bug Analysis
 
-**A documented bug analysis with working fix for VRay Standalone + a GPU behavior report.**
+**Three documented bugs in VRay's BerconTile implementation — with root cause analysis, render proof, and fix recommendations for Chaos.**
 
-This repository documents a well-known but poorly-understood rendering issue:  
-**BerconTile textures render blurry in VRay Standalone (CPU) and completely invisible on GPU.**
+| # | Bug | Renderer | Status |
+|---|---|---|---|
+| [#1](https://github.com/alex-HH88/BerconTile-BlurFix/issues/2) | UV derivative mismatch → blurry tiles | CPU Standalone | ✓ Working fix provided |
+| [#2](https://github.com/alex-HH88/BerconTile-BlurFix/issues/1) | Random UV flip breaks normal maps | CPU Standalone | Workaround: disable flip |
+| [#3](#gpu--no-texture-at-all) | No texture on GPU (CUDA/RTX) | GPU | On Chaos roadmap since 2022 |
 
-Both bugs are confirmed with render proofs from VRay Standalone 7, VRay AppSDK, and an RTX 3070.  
-A working fix is provided for the CPU blur case. The GPU case is documented with official VRay warning messages.
+All three share the same structural root in `BerconSC.h`: the wrapper overrides UV *position* (`UVW()`) but not the associated vector quantities (`DUVW`, `DPdUVW`, `BumpBasisVectors`).
 
 ---
 
@@ -252,6 +254,54 @@ As of VRay 7 (2025) it remains unimplemented.
 
 ---
 
+---
+
+## Bug #2: Random UV Flip Breaks Normal Maps
+
+### Problem
+
+BerconTile applies random per-tile UV mirroring to add variation:
+```
+U_new = 1.0 - U_old   (horizontal flip)
+V_new = 1.0 - V_old   (vertical flip)
+```
+
+For **diffuse/color textures** this is correct — mirroring is purely visual.
+
+For **tangent-space normal maps**, the X channel (red) encodes the surface normal direction *along the U axis*. Mirroring U without negating the X component means the tangent vector points the wrong way → light appears to come from the opposite side, edges look inverted. Tiles with a flip applied will have visibly inconsistent shading compared to non-flipped neighbors.
+
+The same applies to rotations of 90°/270° (which imply a flip of the tangent basis).
+
+### Root cause — same structural issue as Bug #1
+
+In `BerconSC.h`, the UV flip is applied to the coordinate but the tangent basis is never updated:
+
+```cpp
+// UV position: flipped correctly
+Point3 UVW(int channel)  { return uvPoint; }  // tile-local, flipped
+
+// Tangent basis: unchanged — WRONG for flipped normal maps
+void DPdUVW(Point3 dP[3], int channel){ sc->DPdUVW(dP, channel); }
+int BumpBasisVectors(Point3 dP[2], int axis, int channel){
+    return sc->BumpBasisVectors(dP, axis, channel);
+}
+```
+
+### Fix (for Chaos to implement)
+
+**Option A — Safe, simple:** Add parameter `normal_map_mode = 0/1`.  
+When enabled: skip `flip_X`/`flip_Y` and flip-inducing rotations entirely.
+
+**Option B — Correct, complete:** When U-flip was applied, negate the tangent X component in `BumpBasisVectors()` / `DPdUVW()`. When V-flip was applied, negate the bitangent Y component.
+
+Option B preserves the flip feature for normal maps with correct shading. Option A is simpler and safe for most use cases.
+
+### Workaround (today)
+
+Disable `flip_X` and `flip_Y` on the TexBerconTile node when using it in a normal map slot. This eliminates the artifact at the cost of tile variation.
+
+---
+
 ## For Chaos Developers
 
 The `BerconMaps` source code is publicly available under **Apache 2.0**:  
@@ -268,6 +318,8 @@ Or equivalently expose `duvw_scale` as a documented parameter on `UVWGenChannel`
 
 For GPU support, the `Tile::draw()` function in `tile.cpp` needs a CUDA implementation  
 that outputs both tile-local UV coordinates and a tile ID for sub-texture randomization.
+
+**Bug #2 (normal map flip):** The fix is equally contained — `BerconSC::BumpBasisVectors()` and `DPdUVW()` need to negate the appropriate axis when a UV flip was applied. All three bugs share the same root: `BerconSC` overrides `UVW()` but not the associated vector/derivative quantities. A single consistent review of `BerconSC.h` would address all of them.
 
 ---
 
