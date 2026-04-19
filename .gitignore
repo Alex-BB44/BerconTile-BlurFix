@@ -4,3 +4,6 @@ __pycache__/
 output/
 *.zip
 .DS_Store
+CLAUDE.md
+MANUAL_DE.txt
+MANUAL_PL.txt
