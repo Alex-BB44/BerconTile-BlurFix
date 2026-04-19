@@ -4,8 +4,8 @@
 
 | # | Bug | Renderer | Status |
 |---|---|---|---|
-| [#1](https://github.com/alex-HH88/BerconTile-BlurFix/issues/2) | UV derivative mismatch → blurry tiles | CPU Standalone | ✓ Working fix provided |
-| [#2](https://github.com/alex-HH88/BerconTile-BlurFix/issues/1) | Random UV flip breaks normal maps | CPU Standalone | Workaround: disable flip |
+| [#1](https://github.com/Alex-BB44/BerconTile-BlurFix/issues/2) | UV derivative mismatch → blurry tiles | CPU Standalone | ✓ Working fix provided |
+| [#2](https://github.com/Alex-BB44/BerconTile-BlurFix/issues/1) | Random UV flip breaks normal maps | CPU Standalone | Workaround: disable flip |
 | [#3](#gpu--no-texture-at-all) | No texture on GPU (CUDA/RTX) | GPU | On Chaos roadmap since 2022 |
 
 All three share the same structural root in `BerconSC.h`: the wrapper overrides UV *position* (`UVW()`) but not the associated vector quantities (`DUVW`, `DPdUVW`, `BumpBasisVectors`).
@@ -251,8 +251,6 @@ This is an unimplemented feature, not a configuration issue.
 
 **This has been on Chaos' GPU roadmap as "high priority" since September 2022.**  
 As of VRay 7 (2025) it remains unimplemented.
-
----
 
 ---
 

@@ -1,0 +1,309 @@
+// BerconTile Blur-Fix Demo Scene
+// Two planes: left=PNG textures, right=TX (tiled MIP) textures
+// Both use BerconTile -> TexMulti -> BitmapBuffer chain
+// Render without fix to see blur, apply fix to see sharp result
+// See README.md for full explanation
+
+GeomStaticMesh png@mesh {
+  vertices=ListVector(Vector(-130.0,0.0,60.0),Vector(-10.0,0.0,60.0),Vector(-10.0,0.0,-60.0),Vector(-130.0,0.0,-60.0));
+  faces=ListInt(0,1,2,0,2,3);
+  normals=ListVector(Vector(0,1,0),Vector(0,1,0),Vector(0,1,0),Vector(0,1,0));
+  faceNormals=ListInt(0,1,2,0,2,3);
+  map_channels=List(ListVector(Vector(0,0,0),Vector(1,0,0),Vector(1,1,0),Vector(0,1,0)));
+  map_channels_names=ListInt(1);
+}
+
+BitmapBuffer png@buf_0 {
+  file="/opt/MaxScript/BerconTile-BlurFix/resources/BK1a__01_diffuse.png";
+  color_space=1;
+  gamma=1.0;
+}
+UVWGenChannel png@uvw_0 {
+  uvw_channel=1;
+}
+TexBitmap png@bm_0 {
+  bitmap=png@buf_0;
+  uvwgen=png@uvw_0;
+}
+
+BitmapBuffer png@buf_1 {
+  file="/opt/MaxScript/BerconTile-BlurFix/resources/BK1a__02_diffuse.png";
+  color_space=1;
+  gamma=1.0;
+}
+UVWGenChannel png@uvw_1 {
+  uvw_channel=1;
+}
+TexBitmap png@bm_1 {
+  bitmap=png@buf_1;
+  uvwgen=png@uvw_1;
+}
+
+BitmapBuffer png@buf_2 {
+  file="/opt/MaxScript/BerconTile-BlurFix/resources/BK1a__03_diffuse.png";
+  color_space=1;
+  gamma=1.0;
+}
+UVWGenChannel png@uvw_2 {
+  uvw_channel=1;
+}
+TexBitmap png@bm_2 {
+  bitmap=png@buf_2;
+  uvwgen=png@uvw_2;
+}
+
+BitmapBuffer png@buf_3 {
+  file="/opt/MaxScript/BerconTile-BlurFix/resources/BK1a__04_diffuse.png";
+  color_space=1;
+  gamma=1.0;
+}
+UVWGenChannel png@uvw_3 {
+  uvw_channel=1;
+}
+TexBitmap png@bm_3 {
+  bitmap=png@buf_3;
+  uvwgen=png@uvw_3;
+}
+
+BitmapBuffer png@buf_4 {
+  file="/opt/MaxScript/BerconTile-BlurFix/resources/BK1a__05_diffuse.png";
+  color_space=1;
+  gamma=1.0;
+}
+UVWGenChannel png@uvw_4 {
+  uvw_channel=1;
+}
+TexBitmap png@bm_4 {
+  bitmap=png@buf_4;
+  uvwgen=png@uvw_4;
+}
+
+BitmapBuffer png@buf_5 {
+  file="/opt/MaxScript/BerconTile-BlurFix/resources/BK1a__06_diffuse.png";
+  color_space=1;
+  gamma=1.0;
+}
+UVWGenChannel png@uvw_5 {
+  uvw_channel=1;
+}
+TexBitmap png@bm_5 {
+  bitmap=png@buf_5;
+  uvwgen=png@uvw_5;
+}
+
+TexMulti png@multi {
+  mode=12;
+  random_mode=132;
+  textures_list=List(png@bm_0,png@bm_1,png@bm_2,png@bm_3,png@bm_4,png@bm_5);
+  random_weights=ListFloat(1.0,1.0,1.0,1.0,1.0,1.0);
+}
+
+UVWGenChannel png@uvwgen_bercon {
+  uvw_channel=1;
+}
+TexBerconTile png@bercon {
+  uvwgen=png@uvwgen_bercon;
+  noise_map1=png@multi;
+  noise_color2=Color(0.55,0.52,0.48);
+  tile_size=1.0;
+  tile_width=25.0;
+  tile_height2=12.0;
+  rand_rot=0.0;
+  tile_style=0;
+}
+
+BRDFVRayMtl png@brdf {
+  diffuse=png@bercon;
+  reflect=AColor(0.03,0.03,0.03,1);
+  reflect_glossiness=0.35;
+}
+MtlSingleBRDF png@mtl {
+  brdf=png@brdf;
+}
+
+Node png@node {
+  geometry=png@mesh;
+  material=png@mtl;
+  transform=Transform(Matrix(Vector(1,0,0),Vector(0,1,0),Vector(0,0,1)),Vector(0,0,0));
+  primary_visibility=1;
+}
+GeomStaticMesh tx@mesh {
+  vertices=ListVector(Vector(10.0,0.0,60.0),Vector(130.0,0.0,60.0),Vector(130.0,0.0,-60.0),Vector(10.0,0.0,-60.0));
+  faces=ListInt(0,1,2,0,2,3);
+  normals=ListVector(Vector(0,1,0),Vector(0,1,0),Vector(0,1,0),Vector(0,1,0));
+  faceNormals=ListInt(0,1,2,0,2,3);
+  map_channels=List(ListVector(Vector(0,0,0),Vector(1,0,0),Vector(1,1,0),Vector(0,1,0)));
+  map_channels_names=ListInt(1);
+}
+
+BitmapBuffer tx@buf_0 {
+  file="/opt/MaxScript/BerconTile-BlurFix/resources/BK1a__01_diffuse.tx";
+  color_space=1;
+  gamma=1.0;
+}
+UVWGenChannel tx@uvw_0 {
+  uvw_channel=1;
+}
+TexBitmap tx@bm_0 {
+  bitmap=tx@buf_0;
+  uvwgen=tx@uvw_0;
+}
+
+BitmapBuffer tx@buf_1 {
+  file="/opt/MaxScript/BerconTile-BlurFix/resources/BK1a__02_diffuse.tx";
+  color_space=1;
+  gamma=1.0;
+}
+UVWGenChannel tx@uvw_1 {
+  uvw_channel=1;
+}
+TexBitmap tx@bm_1 {
+  bitmap=tx@buf_1;
+  uvwgen=tx@uvw_1;
+}
+
+BitmapBuffer tx@buf_2 {
+  file="/opt/MaxScript/BerconTile-BlurFix/resources/BK1a__03_diffuse.tx";
+  color_space=1;
+  gamma=1.0;
+}
+UVWGenChannel tx@uvw_2 {
+  uvw_channel=1;
+}
+TexBitmap tx@bm_2 {
+  bitmap=tx@buf_2;
+  uvwgen=tx@uvw_2;
+}
+
+BitmapBuffer tx@buf_3 {
+  file="/opt/MaxScript/BerconTile-BlurFix/resources/BK1a__04_diffuse.tx";
+  color_space=1;
+  gamma=1.0;
+}
+UVWGenChannel tx@uvw_3 {
+  uvw_channel=1;
+}
+TexBitmap tx@bm_3 {
+  bitmap=tx@buf_3;
+  uvwgen=tx@uvw_3;
+}
+
+BitmapBuffer tx@buf_4 {
+  file="/opt/MaxScript/BerconTile-BlurFix/resources/BK1a__05_diffuse.tx";
+  color_space=1;
+  gamma=1.0;
+}
+UVWGenChannel tx@uvw_4 {
+  uvw_channel=1;
+}
+TexBitmap tx@bm_4 {
+  bitmap=tx@buf_4;
+  uvwgen=tx@uvw_4;
+}
+
+BitmapBuffer tx@buf_5 {
+  file="/opt/MaxScript/BerconTile-BlurFix/resources/BK1a__06_diffuse.tx";
+  color_space=1;
+  gamma=1.0;
+}
+UVWGenChannel tx@uvw_5 {
+  uvw_channel=1;
+}
+TexBitmap tx@bm_5 {
+  bitmap=tx@buf_5;
+  uvwgen=tx@uvw_5;
+}
+
+TexMulti tx@multi {
+  mode=12;
+  random_mode=132;
+  textures_list=List(tx@bm_0,tx@bm_1,tx@bm_2,tx@bm_3,tx@bm_4,tx@bm_5);
+  random_weights=ListFloat(1.0,1.0,1.0,1.0,1.0,1.0);
+}
+
+UVWGenChannel tx@uvwgen_bercon {
+  uvw_channel=1;
+}
+TexBerconTile tx@bercon {
+  uvwgen=tx@uvwgen_bercon;
+  noise_map1=tx@multi;
+  noise_color2=Color(0.55,0.52,0.48);
+  tile_size=1.0;
+  tile_width=25.0;
+  tile_height2=12.0;
+  rand_rot=0.0;
+  tile_style=0;
+}
+
+BRDFVRayMtl tx@brdf {
+  diffuse=tx@bercon;
+  reflect=AColor(0.03,0.03,0.03,1);
+  reflect_glossiness=0.35;
+}
+MtlSingleBRDF tx@mtl {
+  brdf=tx@brdf;
+}
+
+Node tx@node {
+  geometry=tx@mesh;
+  material=tx@mtl;
+  transform=Transform(Matrix(Vector(1,0,0),Vector(0,1,0),Vector(0,0,1)),Vector(0,0,0));
+  primary_visibility=1;
+}
+RenderView renderView {
+  transform=Transform(
+    Matrix(Vector(1,0,0),Vector(0,0,1),Vector(0,1,0)),
+    Vector(0.0,300.0000,0.0)
+  );
+  fov=0.959931;
+  focalDistance=300.0;
+  clipping_near=1.0;
+  clipping_far=3000.0;
+  orthographic=0;
+}
+LightDirect sun {
+  transform=Transform(
+    Matrix(Vector(1,0,0),Vector(0,0.6,0.8),Vector(0,-0.8,0.6)),
+    Vector(-150,250,150)
+  );
+  color=AColor(1.0,0.96,0.88,1);
+  intensity=3.5;
+  shadowSubdivs=12;
+  enabled=1;
+}
+
+SettingsEnvironment env {
+  bg_color=AColor(0.82,0.88,1.0,1);
+  gi_color=AColor(0.55,0.62,0.78,1);
+}
+
+SettingsGI gi {
+  on=1;
+  primary_multiplier=1.0;
+  primary_engine=4;
+  secondary_engine=3;
+}
+
+SettingsImageSampler sampler {
+  type=3;
+  progressive_minSubdivs=1;
+  progressive_maxSubdivs=50;
+  progressive_noise_threshold=0.005;
+  progressive_maxTime=30;
+}
+
+SettingsColorMapping colormap {
+  type=6;
+}
+
+SettingsOutput output {
+  img_width=1920;
+  img_height=540;
+  img_dir="/opt/MaxScript/BerconTile-BlurFix/output/";
+  img_file="render.png";
+  img_noAlpha=1;
+  frames_per_second=1.0;
+  frame_start=0;
+  frames=1;
+  rgbchannel_consider_for_aa=1;
+}
