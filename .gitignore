@@ -7,3 +7,5 @@ output/
 CLAUDE.md
 MANUAL_DE.txt
 MANUAL_PL.txt
+
+.env
